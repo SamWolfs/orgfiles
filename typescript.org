@@ -1,0 +1,428 @@
+#+TITLE: TypeScript
+#+AUTHOR: Sam Wolfs
+
+** Installation
+To execute Javascript code we require a Javascript runtime; the most popular Javascript runtime is [[https://nodejs.org/en/][Node.js]], although [[https://deno.land/][Deno]] has been gaining in popularity as a more secure alternative with easier Typescript interoperability. Both runtimes use Chrome's V8 engine. We'll be using Node.js as it's the most mature platform.
+
+*** Node.js
+The easiest way to install node is through a version manager, e.g. [[https://asdf-vm.com/][asdf]].
+
+- Follow the [[https://asdf-vm.com/guide/getting-started.html#_3-install-asdf][asdf installation steps]]
+- Install the [[https://github.com/asdf-vm/asdf-nodejs/][asdf node plugin]].
+#+begin_src eshell
+asdf plugin add nodejs https://github.com/asdf-vm/asdf-nodejs.git
+#+end_src
+- Install the [[https://nodejs.org/en/download/][latest LTS version]].
+#+begin_src eshell
+asdf install nodejs lts
+asdf global nodejs lts
+#+end_src
+
+*** Typescript
+To install TypeScript we require a package manager; Node.js comes with [[https://www.npmjs.com/][npm]] preinstalled. Alternatively, there's [[https://yarnpkg.com/][Yarn]]. Both package managers use the ~package.json~ file to track dependencies so there's no noticeable difference between the two.
+
+NPM allows package installation both at the *local (project)* level and *global (cli/editor) level*.
+
+#+name: Globally installing TypeScript
+#+begin_src eshell
+npm install -g typescript
+#+end_src
+
+#+name: Locally installing TypeScript
+#+begin_src eshell
+npm install --save-dev typescript
+#+end_src
+
+After installation we'll gain access to the ~tsc~ command for transpiling TypeScript to JavaScript code.
+
+** Fundamentals
+*** Variables
+Variables are written in camelCase and can contain numbers.
+
+**** let
+~let~ is used for declaration of reassignable variables.
+#+begin_src typescript
+let greeting: string = "Hello";
+greeting = "Hello World!";
+console.log(greeting);
+#+end_src
+
+**** const
+It's also possible to declare constants through ~const~.
+#+begin_src typescript
+const greeting: string = "Hello";
+greeting = "Hello World";
+#+end_src
+
+Although we can still modify the object.
+#+begin_src typescript
+const greetings: string[] = ["Hello", "Hi"];
+greetings.push("Hej")
+console.log(greetings)
+#+end_src
+
+**** var
+~var~ does not respect variable scoping, so we don't like ~var~.
+#+begin_src typescript
+if (true) {
+    var greeting = "Hello World";
+}
+console.log(greeting);
+#+end_src
+*** Types
+**** Primitives
+#+begin_src typescript
+let learning: boolean = true;
+
+let decimal: number = 1.337;
+let hex: number = 0xf00d;
+let binary: number = 0b1010;
+let octal: number = 0o744;
+
+let message: string = "Hello MOTO";
+#+end_src
+
+TypeScript will infer the correct typing of primitives, so it's not necessary to annotate them.
+
+**** Arrays
+#+begin_src typescript
+// Arrays
+let names: string[] = ["Jackie", "Jorge", "Florian", "Henrik"];
+// Tuples (fixed length arrays)
+let coordinates: [number, number] = [55.6633067, 12.3936166];
+#+end_src
+
+**** Any
+~any~ can be used to opt out of typechecking; when using the any type, code will behave like regular JavaScript code. Avoid the use of ~any~ as much as possible.
+
+**** Compound/object types
+Apart from primitive types, the most common sort of the is the /object type/.
+#+begin_src typescript
+let coordinates: {x: number, y: number} = {x: 55.6633067, y: 12.3936166};
+console.log(`Motorola Solutions A/S at (${coordinates.x}, ${coordinates.y})`);
+#+end_src
+
+**** Functions
+TypeScript and JavaScript allow functions to be bound to /regular/ variables. This makes it possible to declare functions in two different ways:
+#+begin_src typescript
+function greet(name: string): string{
+    return `Hello ${name}`;
+}
+const yell = (text: string) => {
+    return `${text.toUpperCase()}!`;
+}
+console.log(yell(greet("moto")));
+#+end_src
+
+The choice between the two is mainly about personal preference, but do keep it consistent within the project.
+
+**** Anonymous Functions
+The previous ~yell~ example is actually an anonymous function that was assigned to a variable. The most common use for anonymous functions is defining callbacks:
+#+begin_src typescript
+console.log([1, 2, 3].map(x => x * x));
+#+end_src
+
+**** Type aliases
+Types can be aliased using the ~type~ special form.
+When defining /object type aliases/ it's also possible to define an ~interface~, interfaces are more flexible than ~type aliases~ in that they can be extended.
+#+begin_src typescript
+type Person = {
+    name: string;
+    age: number;
+}
+
+interface Employee {
+    personalInformation: Person;
+    jobTitle: string;
+}
+
+class Manager {
+    minions: Employee[];
+
+    constructor(minions: Employee[]) {
+        this.minions = minions
+    }
+}
+
+const pawel = new Manager([{
+    personalInformation: {
+        name: "Sam Wolfs",
+        age: 28
+    },
+    jobTitle: "Software Engineer"
+}])
+
+console.log(pawel);
+console.log(pawel.minions[0])
+#+end_src
+
+**** Union types
+A union type defines a new type that can be one of many types. Each type that's part of the union type is called a /member/.
+#+begin_src typescript
+type TaskStatus = "todo" | "doing" | "done";
+function toggleStatus(status: TaskStatus): TaskStatus {
+    switch(status) {
+        case "todo": return "doing";
+        case "doing": return "done";
+        case "done": return "todo";
+    }
+}
+console.log(toggleStatus("todo"));
+console.log(toggleStatus("dingo"));
+#+end_src
+
+**** Optional properties
+We can define optional properties on /object types/ and /tuples/.
+#+begin_src typescript
+type Name = {
+    first_name: string;
+    last_name?: string;
+}
+const actress: Name = {first_name: 'Zendaya'};
+type Coordinates = [x: number, y: number, z?: number];
+const msi: Coordinates = [55.6633067, 12.3936166];
+#+end_src
+Because Javascript functions use /tuples/ behind the scenes, this also extends to functions.
+#+begin_src typescript
+function greet(first_name: string, last_name: string, middle_name?: string) {
+    return `Hello ${first_name} ${middle_name ?? ''} ${last_name}`;
+}
+console.log(greet('Colin', 'Robinson'));
+#+end_src
+Keep in mind that even though ~middle_name~ is defined as ~string~, it will default to ~undefined~ when not provided.
+
+**** Type intersections
+We can also create new types by intersecting with existing types.
+#+begin_src typescript
+type Person = {name: string, dob: Date};
+type Employee = Person & {title: string};
+const sam: Employee = {
+    name: 'Sam Wolfs',
+    dob: new Date('17-09-1993'),
+    title: 'Software Engineer'
+};
+#+end_src
+
+**** Type assertions
+When using /union types/ in functions, sometimes we want to make sure we're dealing with a specific member type.
+#+begin_src typescript
+function weirdAdd(x: number, y: number | string): number {
+    if (typeof y === 'number') {
+        return x + y;
+    }
+    return x + y.length
+}
+console.log(weirdAdd(1, "hello"));
+console.log(weirdAdd(1, 2));
+#+end_src
+
+The ~typeof~ type guard returns one of the following values:
+- 'string'
+- 'number'
+- 'bigint'
+- 'boolean'
+- 'symbol'
+- 'undefined'
+- 'object'
+- 'function'
+*IMPORTANT:* keep in mind that ~null~ will return the 'object' type.
+*** Operators
+**** Arithmetic operators
+#+begin_src typescript
+console.log("Addition: ", 1 + 1);
+console.log("Subtraction: ", 60 - 18);
+console.log("Division: ", 5/2);
+console.log("Multiplication: ", 2 * 2);
+console.log("Remainder: ", 5 % 2);
+console.log("Exponentiation: ", 2 ** 8);
+#+end_src
+**** Equality operators
+The (in)equality operators try to convert types before comparison.
+#+begin_src typescript
+console.log("Equality: ", 1 == '1');
+console.log("Inequality: ", 0 != false);
+#+end_src
+
+The strict (in)equality operators compare both value and types.
+#+begin_src typescript
+console.log("Equality: ", 1 === '1');
+console.log("Inequality: ", 0 !== false);
+#+end_src
+**** Logical operators
+#+begin_src typescript
+console.log(true && "AND stops evaluation at the first falsey value.");
+console.log(false || "OR stops evaluation at the first truthy value.");
+console.log(!false && "NOT inverts the boolean value.");
+#+end_src
+**** Assignment operators
+The following operators all expand as shown in the example.
+~*=, **=, /=, %=, +=, -=, &&=, ||=, ??=~
+#+begin_src typescript
+let a = 10;
+a *= 100; // a = a * 100;
+#+end_src
+*** Conditional statements
+**** ~if...else~
+#+begin_src typescript
+if (true) {
+    console.log("Will print!");
+} else {
+    console.log("Won't print!");
+}
+#+end_src
+**** ~switch~
+#+begin_src typescript
+let x: string = "greeting";
+switch(x) {
+    case "greeting": console.log("Hello"); break;
+    case "goodbye": console.log("Farewell"); break;
+    default: console.log("Hello/Farewell"); break;
+}
+#+end_src
+
+#+RESULTS:
+: Hello
+*** Loops
+While TypeScript and JavaScript have special constructs for looping, it's recommended to stick to recursive higher-order functions such as ~map, reduce, forEach~.
+*** More on Functions
+**** Function type expressions
+~GreetFunction~ describes a function that takes a single parameter of type ~string~ and returns nothing (~void~).
+#+begin_src typescript
+type GreetFunction = (name: string) => void;
+function greeter(fn: GreetFunction) {
+    fn("Hello World");
+}
+greeter(console.log)
+#+end_src
+**** Generic functions
+Generics ~<T>~ can be used to describe a correspondence between two or more values. We do this by declaring a /type parameter/ in the function signature.
+#+begin_src typescript
+function dropOne<T>(arr: T[]): T[] | undefined {
+    const [_hd, ...tail] = arr;
+    return tail;
+}
+console.log(dropOne([1, 2, 3]));
+#+end_src
+**** Default parameters
+Default parameters can be defined by assigning to the argument in a function's parameter list.
+#+begin_src typescript
+function returnOr10(x = 10) {
+    return x;
+}
+console.log(returnOr10(500));
+console.log(returnOr10());
+#+end_src
+
+** Advanced
+*** Pattern-matching aka Parameter destructuring
+It's possible to pattern match against arrays, tuples and objects.
+#+begin_src typescript
+const numbers: number[] = [1, 2, 3, 4, 5];
+const [first, _2, _3, _4, last] = numbers;
+console.log(`first: ${first}, last: ${last}`);
+const tuple: [number, string] = [1337, 'leet'];
+const addArrow = ([num, str]: [number, string]) => {
+    return `${num} => ${str}`;
+}
+console.log(addArrow(tuple));
+type Person = {
+    first_name: string;
+    last_name: string;
+    gender: 'f' | 'm';
+}
+const me: Person = {first_name: "Sam", last_name: "Wolfs", gender: "m"};
+const addressPerson = ({gender, last_name}: Person) => {
+    switch(gender) {
+        case "m": return `Dear Mr. ${last_name}`;
+        case "f": return `Dear Ms. ${last_name}`;
+        default: return `Dear ${last_name}`;
+    }
+}
+console.log(addressPerson(me));
+#+end_src
+
+*** Special operators
+**** Spread operator ~...~
+- When used in a *function definition*, the /spread operator/ collects a list of arguments into an array.
+#+begin_src typescript
+function sum(...xs: number[]) {
+    return xs.reduce((acc, x) => acc + x);
+}
+console.log(sum(1, 2, 3, 4));
+#+end_src
+- When used in a *function call*, the /spread operator/ expands an array into a list of arguments.
+#+begin_src typescript
+function add(x: number, y: number) {
+    return x + y;
+}
+const args: [number, number] = [1300, 37];
+console.log(add(...args));
+#+end_src
+- Similarly, arrays can be concatenated:
+#+begin_src typescript
+let arr1 = [1, 2, 3],
+    arr2 = [4, 5, 6];
+console.log([...arr1, ...arr2]);
+#+end_src
+- Or pattern-matched:
+#+begin_src typescript
+let [hd, ...tail] = [1, 2, 3];
+console.log(`I am the head (${hd}) and here's my tail (${tail})`);
+#+end_src
+- Objects can be cloned using the /spread operator/.
+#+begin_src typescript
+const coordinates = {x: 1, y: 2};
+const cloned_coordinates = {...coordinates};
+console.log(cloned_coordinates);
+#+end_src
+- Keys defined after the /spread operator/ override the previous value.
+#+begin_src typescript
+const coordinates = {x: 1, y: 2};
+const cloned_coordinates = {...coordinates, y: 20};
+console.log(cloned_coordinates);
+#+end_src
+- It's also possible to use the /spread operator/ when pattern-matching objects.
+#+begin_src typescript
+const coordinates = {x: 1, y: 2, z: 3};
+const {z, ...two_dimensional_coords} = coordinates;
+console.log(two_dimensional_coords);
+#+end_src
+**** Optional chaining
+Calling a function on an ~undefined~ or ~null~ value causes an error. To prevent the /illegal/  calling of functions, we can use the ~?.~ operator.
+#+begin_src typescript
+let foo = null;
+console.log(foo?.bar())
+#+end_src
+**** Nullish coalescing ~??~
+Sometimes we'd like to provide a default value when a variable evaluates to ~null~ or ~undefined~. We can use the logical OR ~||~ operator to provide default values when a variable is falsey, unfortunately this also includes ~0~ among others. The ~??~ operator will only continue evaluation when the preceding value evaluates to either ~null~ or ~undefined~.
+#+begin_src typescript
+let foo = 0;
+console.log(foo || "bar");
+console.log(foo ?? "baz");
+#+end_src
+
+** Caveats
+*** Truthy/Falsey
+When coerced to a boolean value, the following return ~true~:
+- ~true~
+- ~{}~
+- ~[]~
+- ~42~
+- ~"0"~
+- ~"false~
+- ~new Date()~
+- ~-42~
+- ~12n~
+- ~3.14~
+- ~-3.14~
+- ~Infinity~
+- ~-Infinity~
+And ~false~ for the following values:
+- ~false~
+- ~0~
+- ~-0~
+- ~0n~
+- ~''~, ~""~, ~``~
+- ~null~
+- ~undefined~
+- ~NaN~
