@@ -35,6 +35,9 @@ npm install --save-dev typescript
 
 After installation we'll gain access to the ~tsc~ command for transpiling TypeScript to JavaScript code.
 
+*** Playgrounds
+- [[https://www.typescriptlang.org/play][TypeScript Playground]]
+- [[https://replit.com][Repl.it]]
 ** Fundamentals
 *** Variables
 Variables are written in camelCase and can contain numbers.
@@ -96,7 +99,7 @@ let coordinates: [number, number] = [55.6633067, 12.3936166];
 ~any~ can be used to opt out of typechecking; when using the any type, code will behave like regular JavaScript code. Avoid the use of ~any~ as much as possible.
 
 **** Compound/object types
-Apart from primitive types, the most common sort of the is the /object type/.
+Apart from primitive types, the most common sort of type is the /object type/.
 #+begin_src typescript
 let coordinates: {x: number, y: number} = {x: 55.6633067, y: 12.3936166};
 console.log(`Motorola Solutions A/S at (${coordinates.x}, ${coordinates.y})`);
@@ -261,87 +264,6 @@ The following operators all expand as shown in the example.
 let a = 10;
 a *= 100; // a = a * 100;
 #+end_src
-*** Conditional statements
-**** ~if...else~
-#+begin_src typescript
-if (true) {
-    console.log("Will print!");
-} else {
-    console.log("Won't print!");
-}
-#+end_src
-**** ~switch~
-#+begin_src typescript
-let x: string = "greeting";
-switch(x) {
-    case "greeting": console.log("Hello"); break;
-    case "goodbye": console.log("Farewell"); break;
-    default: console.log("Hello/Farewell"); break;
-}
-#+end_src
-
-#+RESULTS:
-: Hello
-*** Loops
-While TypeScript and JavaScript have special constructs for looping, it's recommended to stick to recursive higher-order functions such as ~map, reduce, forEach~.
-*** More on Functions
-**** Function type expressions
-~GreetFunction~ describes a function that takes a single parameter of type ~string~ and returns nothing (~void~).
-#+begin_src typescript
-type GreetFunction = (name: string) => void;
-function greeter(fn: GreetFunction) {
-    fn("Hello World");
-}
-greeter(console.log)
-#+end_src
-**** Generic functions
-Generics ~<T>~ can be used to describe a correspondence between two or more values. We do this by declaring a /type parameter/ in the function signature.
-#+begin_src typescript
-function dropOne<T>(arr: T[]): T[] | undefined {
-    const [_hd, ...tail] = arr;
-    return tail;
-}
-console.log(dropOne([1, 2, 3]));
-#+end_src
-**** Default parameters
-Default parameters can be defined by assigning to the argument in a function's parameter list.
-#+begin_src typescript
-function returnOr10(x = 10) {
-    return x;
-}
-console.log(returnOr10(500));
-console.log(returnOr10());
-#+end_src
-
-** Advanced
-*** Pattern-matching aka Parameter destructuring
-It's possible to pattern match against arrays, tuples and objects.
-#+begin_src typescript
-const numbers: number[] = [1, 2, 3, 4, 5];
-const [first, _2, _3, _4, last] = numbers;
-console.log(`first: ${first}, last: ${last}`);
-const tuple: [number, string] = [1337, 'leet'];
-const addArrow = ([num, str]: [number, string]) => {
-    return `${num} => ${str}`;
-}
-console.log(addArrow(tuple));
-type Person = {
-    first_name: string;
-    last_name: string;
-    gender: 'f' | 'm';
-}
-const me: Person = {first_name: "Sam", last_name: "Wolfs", gender: "m"};
-const addressPerson = ({gender, last_name}: Person) => {
-    switch(gender) {
-        case "m": return `Dear Mr. ${last_name}`;
-        case "f": return `Dear Ms. ${last_name}`;
-        default: return `Dear ${last_name}`;
-    }
-}
-console.log(addressPerson(me));
-#+end_src
-
-*** Special operators
 **** Spread operator ~...~
 - When used in a *function definition*, the /spread operator/ collects a list of arguments into an array.
 #+begin_src typescript
@@ -401,6 +323,141 @@ console.log(foo || "bar");
 console.log(foo ?? "baz");
 #+end_src
 
+*** Conditional statements
+**** ~if...else~
+#+begin_src typescript
+if (true) {
+    console.log("Will print!");
+} else {
+    console.log("Won't print!");
+}
+#+end_src
+**** ~switch~
+#+begin_src typescript
+let x: string = "greeting";
+switch(x) {
+    case "greeting": console.log("Hello"); break;
+    case "goodbye": console.log("Farewell"); break;
+    default: console.log("Hello/Farewell"); break;
+}
+#+end_src
+
+#+RESULTS:
+: Hello
+*** Loops
+While TypeScript and JavaScript have special constructs for looping, it's recommended to stick to recursive higher-order functions such as ~map, reduce, forEach~.
+#+begin_src typescript
+["Hello", "Goodbye"].forEach(console.log);
+#+end_src
+
+*** More on Functions
+**** Function type expressions
+~GreetFunction~ describes a function that takes a single parameter of type ~string~ and returns nothing (~void~).
+#+begin_src typescript
+type GreetFunction = (name: string) => void;
+function greeter(fn: GreetFunction) {
+    fn("Hello World");
+}
+greeter(console.log)
+#+end_src
+**** Generic functions
+Generics ~<T>~ can be used to describe a correspondence between two or more values. We do this by declaring a /type parameter/ in the function signature.
+#+begin_src typescript
+function dropOne<T>(arr: T[]): T[] | undefined {
+    const [_hd, ...tail] = arr;
+    return tail;
+}
+console.log(dropOne([1, 2, 3]));
+#+end_src
+**** Default parameters
+Default parameters can be defined by assigning to the argument in a function's parameter list.
+#+begin_src typescript
+function returnOr10(x = 10) {
+    return x;
+}
+console.log(returnOr10(500));
+console.log(returnOr10());
+#+end_src
+
+** Advanced
+*** Pattern-matching aka Parameter destructuring
+It's possible to pattern match against arrays, tuples and objects.
+#+begin_src typescript
+const numbers: number[] = [1, 2, 3, 4, 5];
+const [first, _2, _3, _4, last] = numbers;
+console.log(`first: ${first}, last: ${last}`);
+const tuple: [number, string] = [1337, 'leet'];
+const addArrow = ([num, str]: [number, string]) => {
+    return `${num} => ${str}`;
+}
+console.log(addArrow(tuple));
+type Person = {
+    first_name: string;
+    last_name: string;
+    gender: 'f' | 'm';
+}
+const me: Person = {first_name: "Sam", last_name: "Wolfs", gender: "m"};
+const addressPerson = ({gender, last_name}: Person) => {
+    switch(gender) {
+        case "m": return `Dear Mr. ${last_name}`;
+        case "f": return `Dear Ms. ${last_name}`;
+        default: return `Dear ${last_name}`;
+    }
+}
+console.log(addressPerson(me));
+#+end_src
+
+** Project management
+*** Dependencies
+Packages can be installed through the ~npm install~ command, the ~--save-dev~ flag is used to install dev dependencies.
+
+The ~package.json~ file contains all project information, including dependencies and scripts, similar to ~mix.exs~.
+*** Modules
+Any file containing an ~export~ (or top-level ~await~) is considered a module and practically any expression can be exported.
+#+begin_src typescript
+// @filename: example.ts
+export const pi = 3.1415;
+export class Person {}
+export function helloWorld() {
+    console.log("Hello World!");
+}
+
+// @filename: index.ts
+import {pi, Person, helloWorld} from "./example.ts";
+console.log(pi);
+helloWorld();
+#+end_src
+There's also the ~export default~ form that declares a main export.
+#+begin_src typescript
+// @filename: example.ts
+export function helloWorld() {
+    console.log("Hello World!");
+}
+
+// @filename: index.ts
+import hello from "./example.ts";
+hello();
+#+end_src
+Both types of ~export~ can be combined.
+For more information on modules, check [[https://www.typescriptlang.org/docs/handbook/2/modules.html][the documentation]].
+*** Barrels
+A barrel allows for combining several modules into a single module by re-exporting selected exports of other modules. This can be especially useful when you're sharing code between internal modules, but only want to expose a subset of export to other parts of the codebase. It also cleanes up imports quite nicely.
+#+begin_src typescript
+// @filename: foo/bar.ts
+export class Bar {}
+
+// @filename: foo/baz.ts
+export class Baz {}
+
+// @filename: foo/index.ts
+export * from './bar';
+export * from './baz';
+
+// @filename: index.ts
+import {Bar, Baz} from 'foo';
+#+end_src
+Notice that we don't need to specify the ~index.ts~ barrel file, this is due to JavaScript/TypeScript convention.
+
 ** Caveats
 *** Truthy/Falsey
 When coerced to a boolean value, the following return ~true~:
@@ -426,3 +483,7 @@ And ~false~ for the following values:
 - ~null~
 - ~undefined~
 - ~NaN~
+
+** References
+ - [[https://www.typescriptlang.org/][Official TypeScript Website]]
+ - [[https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference][JavaScript reference]]
