@@ -409,9 +409,21 @@ console.log(addressPerson(me));
 
 ** Project management
 *** Dependencies
-Packages can be installed through the ~npm install~ command, the ~--save-dev~ flag is used to install dev dependencies.
+**** Installing packages
+You can browse [[https://www.npmjs.com/][npm]] for external packages and their documentation.
 
-The ~package.json~ file contains all project information, including dependencies and scripts, similar to ~mix.exs~.
+Packages can be installed by running the ~npm install~ command; optionally using the ~--save-dev/-D~ and ~--global/-g~ flags.
+e.g. Install TypeScript: ~npm install typescript~ or ~npm i typescript~.
+
+Development dependencies are installed by passing the ~-D~ flag, these packages won't be added when running the production build.
+
+
+**** package.json
+The ~package.json~ file contains all the project metadata, including dependencies and scripts and is similar to ~mix.exs~ in Elixir.
+
+Scripts can be added under the ~scripts~ property and can be ran through ~npm run <script-name>~.
+
+For additional configuration options check [[https://docs.npmjs.com/cli/v8/configuring-npm/package-json][the documentation]].
 *** Modules
 Any file containing an ~export~ (or top-level ~await~) is considered a module and practically any expression can be exported.
 #+begin_src typescript
