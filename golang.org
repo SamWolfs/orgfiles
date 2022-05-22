@@ -1,0 +1,52 @@
+#+TITLE: Golang
+
+** Modules
+
+Create a module by running ~go mod init <module-name>~; if the goal is to publish to module (or simply as a best practice), name the module after the repository. e.g. github.com/username-or-org-name/module-name.
+
+** Structs
+
+#+begin_src go
+type Dimensions struct {
+  Height int
+  Width int
+}
+#+end_src
+
+** Goroutines
+
+A concurrent goroutine can be started using the ~go~ special form.
+
+#+begin_src go
+package main
+
+import "fmt"
+
+func print(str string) {
+	fmt.Println(str)
+}
+
+func main() {
+    go print("Hello World!")
+}
+#+end_src
+
+*** Channels
+
+Channels are used to communicate between goroutines. Use the ~make~ function to create a channel.
+
+#+begin_src go
+package main
+
+import "fmt"
+
+func main() {
+
+    messages := make(chan string)
+
+    go func() { messages <- "ping" }()
+
+    msg := <-messages
+    fmt.Println(msg)
+}
+#+end_src
