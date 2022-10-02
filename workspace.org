@@ -1,0 +1,20 @@
+#+title: Workspace
+
+* SSH
+** Creating an SSH key
+#+begin_src shell
+ssh-keygen -t ed25519 -f ~/.ssh/keys/<key-name> -C "be.samwolfs@gmail.com"
+#+end_src
+
+** Copy SSH key to remote host
+#+begin_src shell
+ssh-copy-id -i ~/.ssh/keys/<key-name>.pub <user>@<host>
+#+end_src
+
+** Configuration
+#+begin_src config
+Host <connection-name>
+    HostName <host>
+    User <user>
+    IdentityFile ~/.ssh/keys/<id-key>
+#+end_src
