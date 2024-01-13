@@ -1,0 +1,30 @@
+#+title: Org Babel
+
+** Important shortcuts
+| Shortcut | Action                        | Alt       |
+| ---      | ---                           | ---       |
+| C-c C-c  | Execute code block            |           |
+| C-c '    | Edit code block in major-mode |           |
+| SPC m k  | Remove result for code block  | C-c C-v k |
+
+** Basics
+
+~<s~ followed by ~TAB~ opens a code block in Org-mode. Adding the name of the language as part of the block's header, adds syntax highlighting and the ability to open the code block with the related major-mode for that language.
+
+#+begin_src elisp
+(directory-files ".")
+#+end_src
+
+#+RESULTS:
+| . | .. | .git | .gitignore | fast | fast.org | golang.org | literate-programming.org | scenarios.org | typescript.org | workspace.org |
+
+** Results
+
+By default, the ~RESULTS~ block only shows the result of the last expression in the code block. By using the ~:results~ header, we can change this behaviour:
+
+*NOTE:* Using ~:results verbatim~ here, because ob-js has a bug that causes strings not to be printed correctly, as the node process returns ~"'Goodbye Mars, Hello World'"~, which confuses the ob utilities.
+Reproduction: ~(org-babel-read "'Hello World'")~
+
+#+begin_src js :results verbatim
+return "Goodbye Mars, Hello World";
+#+end_src

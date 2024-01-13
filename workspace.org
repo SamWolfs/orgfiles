@@ -18,3 +18,16 @@ Host <connection-name>
     User <user>
     IdentityFile ~/.ssh/keys/<id-key>
 #+end_src
+
+* Passwords
+** Create GPG key
+#+begin_src shell
+gpg --full-generate-key
+gpg --list-secret-keys --keyid-format=long # Copy long form of the GPG key (part after algorithm)
+#+end_src
+
+** Initialize password store
+#+begin_src shell
+pass init <gpg-key>
+pass git init
+#+end_src
