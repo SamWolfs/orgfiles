@@ -1,0 +1,7 @@
+* root :elfeed:
+** Programming :programming:
+*** [[https://howardism.org/index.xml][Howardism]] :emacs:
+*** [[https://rachelbythebay.com/w/atom.xml][Rachel by the Bay]] :sre:
+*** [[https://taylor.town/feed.xml][Taylor Town]]
+*** [[https://ludic.mataroa.blog/rss/][Ludicity]]
+
